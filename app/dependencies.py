@@ -6,8 +6,9 @@ import pycountry
 
 
 class QueryParams:
-    def __init__(self, city: str, date: datetime,
-                 country_code: Optional[str] = Query(None, max_length=2)):
+    def __init__(self, country_code: Optional[str] = Query(None, max_length=2),
+                 city: Optional[str] = Query(None),
+                 date: Optional[datetime] = Query(None)):
         self.country_code = country_code
         self.city = city
         self.date = date

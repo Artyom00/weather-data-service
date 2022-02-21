@@ -5,7 +5,8 @@ from app.db.models import weather
 class DbManager:
     @staticmethod
     async def retrieve_result_by(params: str):
-        query = weather.select().where(weather.c.query.ilike(params))
+        query = weather.select(weather.c.weather_data).where(
+            weather.c.query.ilike(params))
         return await database.fetch_one(query=query)
 
     @staticmethod

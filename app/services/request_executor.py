@@ -1,38 +1,41 @@
 import datetime
-import os
 
 from dateutil import tz
 from fastapi import HTTPException, status
 import httpx
+
+from app import settings
 
 
 class RequestExecutor:
     history_weather_url = (
         'https://api.openweathermap.org/data/2.5/onecall/timemachine')
     actual_weather_url = 'https://api.openweathermap.org/data/2.5/onecall'
+    common_params = {
+        "units": "metric",
+        "lang": "ru",
+        "appid": settings.API_KEY
+    }
 
-    def __init__(self, lat, lon, dt, api_key: str = os.getenv('API_KEY')):
-        self.lat = lat
-        self.lon = lon
-        self.dt = dt
-        self.__api_key = api_key
+    def __init__(self, **kwargs):
+        self.dt = kwargs.get('dt')
+        self.params = {
+            key: value for key, value in kwargs.items() if
+            key != 'dt'}  # -> {'lat': float, 'lon': float}
 
     async def get_forecast(self):
         if self.dt.date() < datetime.date.today():
             url = self.history_weather_url
+            self.params.update(
+                {'dt': int(datetime.datetime.timestamp(self.dt)),
+                 **self.common_params})
 
         else:
             url = self.actual_weather_url
+            self.params.update({**self.common_params})
 
         async with httpx.AsyncClient() as request:
-            resp = await request.get(url, params={
-                "lat": self.lat,
-                "lon": self.lon,
-                "dt": int(self.dt.timestamp()),
-                "units": "metric",
-                "lang": "ru",
-                "appid": self.__api_key})
-
+            resp = await request.get(url, params=self.params)
             if resp.status_code != httpx.codes.OK:
                 raise HTTPException(status_code=resp.status_code,
                                     detail=resp.json())
@@ -54,5 +57,7 @@ class RequestExecutor:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                     detail={
                                         "cod": "400",
-                                        "message": "forecast out of range"
+                                        "message": "you can only query the"
+                                                   " weather forecast at "
+                                                   "12 a.m for the next week"
                                     })

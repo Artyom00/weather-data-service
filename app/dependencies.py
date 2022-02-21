@@ -1,11 +1,13 @@
 from datetime import datetime
+from typing import Optional
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Query
 import pycountry
 
 
 class QueryParams:
-    def __init__(self, country_code: str, city: str, date: datetime):
+    def __init__(self, city: str, date: datetime,
+                 country_code: Optional[str] = Query(None, max_length=2)):
         self.country_code = country_code
         self.city = city
         self.date = date

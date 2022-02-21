@@ -1,17 +1,14 @@
-import os
-
-from dotenv import load_dotenv
 from fastapi import HTTPException, status
 import httpx
 
-load_dotenv()
+from app import settings
 
 
 class Geocoder:
     remote_url = 'http://api.openweathermap.org/geo/1.0/direct'
 
     def __init__(self, country_code: str, city: str,
-                 api_key: str = os.getenv("API_KEY")):
+                 api_key: str = settings.API_KEY):
         self.country_code = country_code
         self.city = city
         self.__api_key = api_key

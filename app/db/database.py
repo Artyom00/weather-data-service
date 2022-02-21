@@ -8,7 +8,7 @@ DATABASE_URL = (
 
 database = databases.Database(DATABASE_URL)
 
-engine = create_async_engine(DATABASE_URL)
+engine = create_async_engine(DATABASE_URL, echo=True)
 
 
 async def init_db():

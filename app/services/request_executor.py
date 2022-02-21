@@ -43,8 +43,6 @@ class RequestExecutor:
             if url.endswith('/timemachine'):
                 return resp.json()['current']
 
-            forecast_is_found = False
-
             for forecast in resp.json()['daily']:
                 curr_tz = tz.gettz(resp.json()["timezone"])
 
@@ -53,11 +51,10 @@ class RequestExecutor:
                     tzinfo=None) == self.dt:
                     return forecast
 
-            if not forecast_is_found:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                    detail={
-                                        "cod": "400",
-                                        "message": "you can only query the"
-                                                   " weather forecast at "
-                                                   "12 a.m for the next week"
-                                    })
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail={
+                                    "cod": "400",
+                                    "message": "you can only query the"
+                                               " weather forecast at "
+                                               "12 a.m for the next week"
+                                })

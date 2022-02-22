@@ -20,6 +20,6 @@ class QueryParams:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f"country_code '{self.country_code}'"
                                        f" does not match"
-                                       f" the ISO 3166 standard")
+                                       f" the ISO 3166-1 alpha-2 standard")
 
         return self.country_code
